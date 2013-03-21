@@ -16,8 +16,8 @@ from __future__ import with_statement # for python 2.5
 __author__ = 'Robert Ellenberg'
 __license__ = 'GPLv3 license'
 
-import hubo_ach
-import ach as ha
+import hubo_ach as ha
+import ach
 import time
 from ctypes import *
 
@@ -47,46 +47,23 @@ if __name__=='__main__':
     s = ach.Channel(ha.HUBO_CHAN_STATE_NAME)
     s.flush()
     state = ha.HUBO_STATE()
+    
+    ts = ach.Channel(ha.HUBO_CHAN_VIRTUAL_TO_SIM_NAME)
+    ts.flush()
+    sim = ha.HUBO_VIRTUAL()
+    
+    fs = ach.Channel(ha.HUBO_CHAN_VIRTUAL_FROM_SIM_NAME)
+    fs.flush()
 
 # start edit here
+    env.StopSimulation()
+    fs.put(sim) 
     while(1):
-        [statuss, framesizes] = s.get(state, wait=True, last=False)
+        [statuss, framesizes] = ts.get(sim, wait=True, last=False)
+        [statuss, framesizes] = s.get(state, wait=False, last=True)
+
+
         pose=robot.GetDOFValues() # gets the current state
-
-# Get current state from simulation 
-        state.joint[ha.RSP].pos = pos[ind('RSP')]
-        state.joint[ha.RSR].pos = pos[ind('RSR')]
-        state.joint[ha.RSY].pos = pos[ind('RSY')]
-        state.joint[ha.REB].pos = pos[ind('REB')]
-        state.joint[ha.RWY].pos = pos[ind('RWY')]
-        state.joint[ha.RWP].pos = pos[ind('RWP')]
-        
-        state.joint[ha.LSP].pos = pos[ind('LSP')]
-        state.joint[ha.LSR].pos = pos[ind('LSR')]
-        state.joint[ha.LSY].pos = pos[ind('LSY')]
-        state.joint[ha.LEB].pos = pos[ind('LEB')]
-        state.joint[ha.LWY].pos = pos[ind('LWY')]
-        state.joint[ha.LWP].pos = pos[ind('LWP')]
-
-        state.joint[ha.WST].pos = pos[ind('WST')]
-
-        state.joint[ha.RHY].pos = pos[ind('RHY')]
-        state.joint[ha.RHR].pos = pos[ind('RHR')]
-        state.joint[ha.RHP].pos = pos[ind('RHP')]
-        state.joint[ha.RKN].pos = pos[ind('RKN')]
-        state.joint[ha.RAP].pos = pos[ind('RAP')]
-        state.joint[ha.RAR].pos = pos[ind('RAR')]
-
-        state.joint[ha.LHY].pos = pos[ind('LHY')]
-        state.joint[ha.LHR].pos = pos[ind('LHR')]
-        state.joint[ha.LHP].pos = pos[ind('LHP')]
-        state.joint[ha.LKN].pos = pos[ind('LKN')]
-        state.joint[ha.LAP].pos = pos[ind('LAP')]
-        state.joint[ha.LAR].pos = pos[ind('LAR')]
-
-# put the current state
-        s.put(state)
-
 # Set Reference from simulation
         pose[ind('RSP')] = state.joint[ha.RSP].ref
         pose[ind('RSR')] = state.joint[ha.RSR].ref
@@ -102,19 +79,19 @@ if __name__=='__main__':
         pose[ind('LWY')] = state.joint[ha.LWY].ref
         pose[ind('LWP')] = state.joint[ha.LWP].ref
 
-        pose[ind('WST')] = state.joint[ha.WST].ref
+        pose[ind('HPY')] = state.joint[ha.WST].ref
 
         pose[ind('RHY')] = state.joint[ha.RHY].ref
         pose[ind('RHR')] = state.joint[ha.RHR].ref
         pose[ind('RHP')] = state.joint[ha.RHP].ref
-        pose[ind('RKN')] = state.joint[ha.RKN].ref
+        pose[ind('RKP')] = state.joint[ha.RKN].ref
         pose[ind('RAP')] = state.joint[ha.RAP].ref
         pose[ind('RAR')] = state.joint[ha.RAR].ref
 
         pose[ind('LHY')] = state.joint[ha.LHY].ref
         pose[ind('LHR')] = state.joint[ha.LHR].ref
         pose[ind('LHP')] = state.joint[ha.LHP].ref
-        pose[ind('LKN')] = state.joint[ha.LKN].ref
+        pose[ind('LKP')] = state.joint[ha.LKN].ref
         pose[ind('LAP')] = state.joint[ha.LAP].ref
         pose[ind('LAR')] = state.joint[ha.LAR].ref
 
@@ -126,10 +103,50 @@ if __name__=='__main__':
 
         N = numpy.ceil(ha.HUBO_LOOP_PERIOD/openhubo.TIMESTEP)
         T = 1/N*ha.HUBO_LOOP_PERIOD
-        for x in range(0,N):
-            env.StepSimulation(T)  # this is in seconds
+        print 'openhubo.TIMESTEP = ',openhubo.TIMESTEP, ' : N = ', N, ' : T = ', T
+        for x in range(0,int(N)):
+            env.StepSimulation(openhubo.TIMESTEP)  # this is in seconds
+            sim.time = sim.time + openhubo.TIMESTEP
         
-        time.sleep(0.001)  # sleep to allow for keyboard input
+
+        pose=robot.GetDOFValues() # gets the current state
+
+# Get current state from simulation 
+        state.joint[ha.RSP].pos = pose[ind('RSP')]
+        state.joint[ha.RSR].pos = pose[ind('RSR')]
+        state.joint[ha.RSY].pos = pose[ind('RSY')]
+        state.joint[ha.REB].pos = pose[ind('REB')]
+        state.joint[ha.RWY].pos = pose[ind('RWY')]
+        state.joint[ha.RWP].pos = pose[ind('RWP')]
+        
+        state.joint[ha.LSP].pos = pose[ind('LSP')]
+        state.joint[ha.LSR].pos = pose[ind('LSR')]
+        state.joint[ha.LSY].pos = pose[ind('LSY')]
+        state.joint[ha.LEB].pos = pose[ind('LEB')]
+        state.joint[ha.LWY].pos = pose[ind('LWY')]
+        state.joint[ha.LWP].pos = pose[ind('LWP')]
+
+        state.joint[ha.WST].pos = pose[ind('HPY')]
+
+        state.joint[ha.RHY].pos = pose[ind('RHY')]
+        state.joint[ha.RHR].pos = pose[ind('RHR')]
+        state.joint[ha.RHP].pos = pose[ind('RHP')]
+        state.joint[ha.RKN].pos = pose[ind('RKP')]
+        state.joint[ha.RAP].pos = pose[ind('RAP')]
+        state.joint[ha.RAR].pos = pose[ind('RAR')]
+
+        state.joint[ha.LHY].pos = pose[ind('LHY')]
+        state.joint[ha.LHR].pos = pose[ind('LHR')]
+        state.joint[ha.LHP].pos = pose[ind('LHP')]
+        state.joint[ha.LKN].pos = pose[ind('LKP')]
+        state.joint[ha.LAP].pos = pose[ind('LAP')]
+        state.joint[ha.LAR].pos = pose[ind('LAR')]
+
+# put the current state
+        s.put(state)
+        fs.put(sim) 
+
+        time.sleep(0.01)  # sleep to allow for keyboard input
 
 
 # end here
