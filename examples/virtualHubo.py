@@ -21,12 +21,33 @@ import ach
 import time
 from ctypes import *
 
+import select
+
 from openravepy import *
 from numpy import *
 import time
 import sys
 from servo import *
 import openhubo 
+
+
+
+
+
+
+
+def heardEnter():
+    i,o,e = select.select([sys.stdin],[],[],0.0001)
+    for s in i:
+        if s == sys.stdin:
+            input = sys.stdin.readline()
+            return True
+    return False
+
+
+
+
+
 
 if __name__=='__main__':
 
@@ -56,6 +77,13 @@ if __name__=='__main__':
     fs.flush()
 
 # start edit here
+    print('Press ENTER to start sim')
+    tmp = raw_input()
+    print tmp
+
+    print('Starting Sim')
+
+
     env.StopSimulation()
     fs.put(sim) 
     while(1):
@@ -103,7 +131,7 @@ if __name__=='__main__':
 
         N = numpy.ceil(ha.HUBO_LOOP_PERIOD/openhubo.TIMESTEP)
         T = 1/N*ha.HUBO_LOOP_PERIOD
-        print 'openhubo.TIMESTEP = ',openhubo.TIMESTEP, ' : N = ', N, ' : T = ', T
+#        print 'openhubo.TIMESTEP = ',openhubo.TIMESTEP, ' : N = ', N, ' : T = ', T
         for x in range(0,int(N)):
             env.StepSimulation(openhubo.TIMESTEP)  # this is in seconds
             sim.time = sim.time + openhubo.TIMESTEP
@@ -146,7 +174,7 @@ if __name__=='__main__':
         s.put(state)
         fs.put(sim) 
 
-        time.sleep(0.01)  # sleep to allow for keyboard input
+        time.sleep(0.0001)  # sleep to allow for keyboard input
 
 
 # end here
