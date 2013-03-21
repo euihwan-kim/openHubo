@@ -68,14 +68,14 @@ if __name__=='__main__':
         pose[ind('RSP')] = state.joint[ha.RSP].ref
         pose[ind('RSR')] = state.joint[ha.RSR].ref
         pose[ind('RSY')] = state.joint[ha.RSY].ref
-        pose[ind('REB')] = state.joint[ha.REB].ref
+        pose[ind('REP')] = state.joint[ha.REB].ref
         pose[ind('RWY')] = state.joint[ha.RWY].ref
         pose[ind('RWP')] = state.joint[ha.RWP].ref
         
         pose[ind('LSP')] = state.joint[ha.LSP].ref
         pose[ind('LSR')] = state.joint[ha.LSR].ref
         pose[ind('LSY')] = state.joint[ha.LSY].ref
-        pose[ind('LEB')] = state.joint[ha.LEB].ref
+        pose[ind('LEP')] = state.joint[ha.LEB].ref
         pose[ind('LWY')] = state.joint[ha.LWY].ref
         pose[ind('LWP')] = state.joint[ha.LWP].ref
 
@@ -115,14 +115,14 @@ if __name__=='__main__':
         state.joint[ha.RSP].pos = pose[ind('RSP')]
         state.joint[ha.RSR].pos = pose[ind('RSR')]
         state.joint[ha.RSY].pos = pose[ind('RSY')]
-        state.joint[ha.REB].pos = pose[ind('REB')]
+        state.joint[ha.REB].pos = pose[ind('REP')]
         state.joint[ha.RWY].pos = pose[ind('RWY')]
         state.joint[ha.RWP].pos = pose[ind('RWP')]
         
         state.joint[ha.LSP].pos = pose[ind('LSP')]
         state.joint[ha.LSR].pos = pose[ind('LSR')]
         state.joint[ha.LSY].pos = pose[ind('LSY')]
-        state.joint[ha.LEB].pos = pose[ind('LEB')]
+        state.joint[ha.LEB].pos = pose[ind('LEP')]
         state.joint[ha.LWY].pos = pose[ind('LWY')]
         state.joint[ha.LWP].pos = pose[ind('LWP')]
 
