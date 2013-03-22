@@ -14,6 +14,7 @@
 
 from __future__ import with_statement # for python 2.5
 __author__ = 'Robert Ellenberg'
+__author__ = 'Daniel M. Lofaro'
 __license__ = 'GPLv3 license'
 
 import hubo_ach as ha
@@ -30,22 +31,32 @@ import sys
 from servo import *
 import openhubo 
 
+skip = 100
+skipi = 0
+skiptemp = 0.0
 
 
+class Timer(object):
+    def __init__(self, name=None):
+        self.name = name
 
+    def __enter__(self):
+        self.tstart = time.time()
 
-
-
-def heardEnter():
-    i,o,e = select.select([sys.stdin],[],[],0.0001)
-    for s in i:
-        if s == sys.stdin:
-            input = sys.stdin.readline()
-            return True
-    return False
-
-
-
+    def __exit__(self, type, value, traceback):
+        global skip
+        global skipi
+        global skiptemp
+        skiptemp = skiptemp + (time.time() - self.tstart)
+        if (skipi < skip):
+            skipi = skipi + 1
+        else:
+            skiptemp = skiptemp/100.0
+            if self.name:
+                print '[%s]' % self.name,
+           # print 'Elapsed: %s' % (time.time() - self.tstart)
+            print 'Elapsed: ',skiptemp,' sec : ', (ha.HUBO_LOOP_PERIOD/skiptemp * 100.0),' percent'
+            skipi = 0
 
 
 
@@ -87,6 +98,7 @@ if __name__=='__main__':
     env.StopSimulation()
     fs.put(sim) 
     while(1):
+      with Timer('Get_Pose'):
         [statuss, framesizes] = ts.get(sim, wait=True, last=False)
         [statuss, framesizes] = s.get(state, wait=False, last=True)
 
