@@ -1,9 +1,9 @@
 [submodule "forceSensor"]
 	path = forceSensor
 	url = git://github.com/robEllenberg/forceSensor.git
-[submodule "comps-plugins"]
-	path = comps-plugins
-	url = git://github.com/robEllenberg/comps-plugins.git
-[submodule "openmr"]
-	path = openmr
-	url = git://github.com/robEllenberg/openmr.git
+[submodule "servocontroller"]
+	path = servocontroller
+	url = git://github.com/daslrobotics/servocontroller.git
+[submodule "comps-code"]
+	path = comps-code
+	url = git://github.com/robEllenberg/comps-code.git
